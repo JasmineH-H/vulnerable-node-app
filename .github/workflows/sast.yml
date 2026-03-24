@@ -1,0 +1,69 @@
+name: SAST Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout vulerable node repo
+        uses: actions/checkout@v4
+
+      - name: Checkout scanner repo
+        uses: actions/checkout@v4
+        with:
+          repository: JasmineH-H/SAST-Pentest-Tool
+          path: SAST-Pentest-Tool
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install SAST scanner dependencies
+        working-directory: ./SAST-Pentest-Tool/sast/backend
+        run: npm install
+
+      - name: Start SAST scanner
+        working-directory: ./SAST-Pentest-Tool/sast/backend
+        run: |
+          node server.js > scanner.log 2>&1 &
+          echo $! > scanner.pid
+
+      - name: Wait for scanner to become ready
+        run: |
+          for i in {1..20}; do
+            if curl -sf http://localhost:3000/health > /dev/null; then
+              echo "Scanner is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Scanner failed to start"
+          cat SAST-Pentest-Tool/sast/backend/scanner.log || true
+          exit 1
+
+      - name: Scan repository
+        run: |
+          curl -sS -X POST http://localhost:3000/scan/directory \
+            -H "Content-Type: application/json" \
+            -d '{"dirpath":"./"}' \
+            -o sast-result.json
+
+      - name: Show result
+        run: cat sast-result.json
+
+      - name: Upload SAST result artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sast-result
+          path: sast-result.json
+
+      - name: Stop scanner
+        if: always()
+        run: |
+          kill $(cat SAST-Pentest-Tool/sast/backend/scanner.pid) || true
