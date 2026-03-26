@@ -11,4 +11,6 @@ jobs:
     with:
       backend_api_url: ${{ vars.BACKEND_API_URL }}
     secrets:
-      INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+      INGEST_TOKEN: ${{ secrets.INGEST_TOKEN_SAST
+      
+       }}
