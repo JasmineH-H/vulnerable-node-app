@@ -13,4 +13,3 @@ jobs:
     secrets:
       INGEST_TOKEN_SAST: ${{ secrets.INGEST_TOKEN_SAST }}
  
- 
