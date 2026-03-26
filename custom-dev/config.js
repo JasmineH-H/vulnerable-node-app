@@ -6,4 +6,3 @@ eval("console.log('danger')");
 
 // SQL_INJECTION 
 db.query("SELECT * FROM users WHERE id = " + userId); 
-
