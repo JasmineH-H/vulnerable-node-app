@@ -5,4 +5,4 @@ const password = "secret123";
 eval("console.log('danger')");    
 
 // SQL_INJECTION 
-db.query("SELECT * FROM users WHERE id = " + userId);
+db.query("SELECT * FROM users WHERE id = " + userId); 
