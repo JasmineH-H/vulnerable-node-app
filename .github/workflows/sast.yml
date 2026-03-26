@@ -9,8 +9,6 @@ jobs:
   sast:
     uses: JasmineH-H/SAST-Pentest-Tool/.github/workflows/sast.yml@main
     with:
-      backend_api_url: ${{ vars.BACKEND_API_URL }}
+      BACKEND_API_URL: ${{ vars.BACKEND_API_URL }}
     secrets:
-      INGEST_TOKEN: ${{ secrets.INGEST_TOKEN_SAST
-      
-       }}
+      INGEST_TOKEN: ${{ secrets.INGEST_TOKEN_SAST }}
